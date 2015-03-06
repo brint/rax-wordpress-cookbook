@@ -7,8 +7,12 @@
   <Directory <%= @params[:docroot] %>>
     Options FollowSymLinks
     AllowOverride FileInfo Options
+    <% if node['platform'] == 'Ubuntu' and node['platform_version'].to_f <= 12.04 %>
     Order allow,deny
     Allow from all
+    <% else %>
+    Require all granted
+    <% end %>
   </Directory>
 
   <Directory />
@@ -21,9 +25,10 @@
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-access.log combined
 
   RewriteEngine On
+  <% if node['platform'] == 'Ubuntu' and node['platform_version'].to_f <= 12.04 %>
   RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
   RewriteLogLevel 0
-
+  <% end %>
 </VirtualHost>
 
 <%- end %>
